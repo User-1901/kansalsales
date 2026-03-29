@@ -10,7 +10,20 @@ export default function HomePage() {
   useEffect(() => {
     api
       .get('/api/products')
-      .then((res) => setProducts(res.data.slice(0, 6)))
+      .then((res) => {
+        // Transform snake_case from server to camelCase for client
+        const transformed = res.data.map((p: Record<string, unknown>) => ({
+          id: p.id,
+          name: p.name,
+          description: p.description,
+          price: p.price,
+          stockStatus: p.stock_status,
+          categoryId: p.category_id,
+          imageUrls: p.image_urls,
+          quantityAvailable: p.quantity_available,
+        }));
+        setProducts(transformed.slice(0, 6));
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);

@@ -5,10 +5,10 @@ import ConfirmationDialog from '../components/ConfirmationDialog';
 interface Category { id: string; name: string; }
 interface Product {
   id: string; name: string; description: string;
-  price: string; stock_status: string; category_id: string; image_urls: string[];
+  price: string; stock_status: string; category_id: string; image_urls: string[]; quantity_available?: number;
 }
 
-const EMPTY_FORM = { name: '', description: '', price: '', categoryId: '', stockStatus: 'in_stock' };
+const EMPTY_FORM = { name: '', description: '', price: '', categoryId: '', stockStatus: 'in_stock', quantity: '0' };
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -26,6 +26,7 @@ export default function AdminProductsPage() {
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [confirm, setConfirm] = useState<{ isOpen: boolean; message: string; onConfirm: () => void }>({
     isOpen: false, message: '', onConfirm: () => {},
   });
@@ -59,10 +60,12 @@ export default function AdminProductsPage() {
       price: p.price,
       categoryId: p.category_id || '',
       stockStatus: p.stock_status || 'in_stock',
+      quantity: String(p.quantity_available || 0),
     });
     setImageFiles([]);
     setImagePreviews(p.image_urls); // show existing images
     setError('');
+    setSuccess('');
     setShowForm(true);
   }
 
@@ -73,6 +76,7 @@ export default function AdminProductsPage() {
     setImageFiles([]);
     setImagePreviews([]);
     setError('');
+    setSuccess('');
   }
 
   function set(field: keyof typeof EMPTY_FORM) {
@@ -127,6 +131,7 @@ export default function AdminProductsPage() {
     setSaving(true);
     setUploading(imageFiles.length > 0);
     setError('');
+    setSuccess('');
 
     try {
       // Upload new files first
@@ -141,30 +146,38 @@ export default function AdminProductsPage() {
         name: form.name.trim(),
         description: form.description.trim(),
         price: form.price,
-        categoryId: form.categoryId || null,
-        stock_status: form.stockStatus,
+        category_id: form.categoryId || null,
+        quantity_available: parseInt(form.quantity) || 0,
+        stock_status: parseInt(form.quantity) === 0 ? 'out_of_stock' : 'in_stock',
         image_urls: allImageUrls,
       };
 
       if (editingId) {
-        setConfirm({
-          isOpen: true,
-          message: `Save changes to "${form.name}"?`,
-          onConfirm: async () => {
-            setConfirm(c => ({ ...c, isOpen: false }));
-            try { await api.put(`/api/products/${editingId}`, payload); await fetchData(); closeForm(); }
-            catch { setError('Failed to update product.'); }
-            finally { setSaving(false); }
-          },
-        });
-        setSaving(false);
+        // Direct save without confirmation for better UX
+        try {
+          await api.put(`/api/products/${editingId}`, payload);
+          setSuccess(`✅ "${form.name}" updated successfully!`);
+          await fetchData();
+          setTimeout(() => closeForm(), 1500);
+        } catch (apiErr: unknown) {
+          const errorMsg = apiErr instanceof Error ? apiErr.message : 'Failed to update product';
+          setError(`Error: ${errorMsg}`);
+        }
       } else {
-        await api.post('/api/products', payload);
-        await fetchData();
-        closeForm();
+        try {
+          await api.post('/api/products', payload);
+          setSuccess(`✅ "${form.name}" added successfully!`);
+          await fetchData();
+          setTimeout(() => closeForm(), 1500);
+        } catch (apiErr: unknown) {
+          const errorMsg = apiErr instanceof Error ? apiErr.message : 'Failed to add product';
+          setError(`Error: ${errorMsg}`);
+        }
       }
-    } catch {
-      setError('Failed to save product. Please try again.');
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'Failed to save product';
+      setError(`Error: ${errorMsg}`);
+      console.error(err);
     } finally {
       setSaving(false);
       setUploading(false);
@@ -212,7 +225,7 @@ export default function AdminProductsPage() {
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
             <h2 style={{ margin: 0, fontSize: 18, fontWeight: 700, color: '#0f172a' }}>
-              {editingId ? 'Edit Product' : 'Add New Product'}
+              {editingId ? '✏️ Edit Product' : '➕ Add New Product'}
             </h2>
             <button onClick={closeForm} style={{ background: 'none', border: 'none', fontSize: 20, cursor: 'pointer', color: '#94a3b8' }}>✕</button>
           </div>
@@ -220,6 +233,12 @@ export default function AdminProductsPage() {
           {error && (
             <div style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', padding: '10px 14px', borderRadius: 8, fontSize: 13, marginBottom: 16 }}>
               {error}
+            </div>
+          )}
+
+          {success && (
+            <div style={{ background: '#f0fdf4', border: '1px solid #86efac', color: '#16a34a', padding: '10px 14px', borderRadius: 8, fontSize: 13, marginBottom: 16, fontWeight: 600 }}>
+              {success}
             </div>
           )}
 
@@ -249,11 +268,8 @@ export default function AdminProductsPage() {
                 </select>
               </div>
               <div className="form-group">
-                <label htmlFor="p-status">Stock Status</label>
-                <select id="p-status" value={form.stockStatus} onChange={set('stockStatus')}>
-                  <option value="in_stock">In Stock</option>
-                  <option value="out_of_stock">Out of Stock</option>
-                </select>
+                <label htmlFor="p-qty">Quantity Available *</label>
+                <input id="p-qty" type="number" min="0" value={form.quantity} onChange={set('quantity')} required placeholder="0" />
               </div>
             </div>
 
@@ -326,7 +342,7 @@ export default function AdminProductsPage() {
                 border: 'none', borderRadius: 8, fontWeight: 700, fontSize: 14,
                 cursor: isBusy ? 'not-allowed' : 'pointer', opacity: isBusy ? 0.7 : 1,
               }}>
-                {uploading ? 'Uploading images…' : saving ? 'Saving…' : editingId ? 'Save Changes' : 'Add Product'}
+                {uploading ? 'Uploading images…' : saving ? (editingId ? 'Saving changes…' : 'Adding…') : editingId ? '💾 Save Changes' : '➕ Add Product'}
               </button>
               <button type="button" onClick={closeForm} style={{
                 padding: '10px 18px', background: '#f1f5f9', color: '#475569',
@@ -354,6 +370,7 @@ export default function AdminProductsPage() {
               <tr>
                 <th>Product</th>
                 <th>Price</th>
+                <th>Qty Available</th>
                 <th>Category</th>
                 <th>Status</th>
                 <th style={{ width: 130 }}>Actions</th>
@@ -381,6 +398,7 @@ export default function AdminProductsPage() {
                       </div>
                     </td>
                     <td style={{ fontWeight: 700, color: '#15803d' }}>₹{parseFloat(p.price).toFixed(2)}</td>
+                    <td style={{ fontWeight: 700, color: '#334155' }}>{p.quantity_available || 0}</td>
                     <td style={{ color: cat ? '#334155' : '#94a3b8', fontSize: 13 }}>{cat ? cat.name : 'None'}</td>
                     <td>
                       <span style={{

@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/axios';
 import { useAuth } from '../contexts/AuthContext';
@@ -14,7 +14,6 @@ export default function CartPage() {
   const { user, setCartCount } = useAuth();
   const [items, setItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const debounceTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
 
   useEffect(() => {
     if (user) {
@@ -39,25 +38,25 @@ export default function CartPage() {
 
   function updateQuantity(productId: string, newQty: number) {
     if (newQty < 1) return;
+    
+    // Update UI immediately
     const updated = items.map((i) =>
       i.productId === productId ? { ...i, quantity: newQty } : i
     );
     setItems(updated);
+    setCartCount(updated.reduce((s, i) => s + i.quantity, 0));
 
-    clearTimeout(debounceTimers.current[productId]);
-    debounceTimers.current[productId] = setTimeout(() => {
-      if (user) {
-        api.put(`/api/cart/items/${productId}`, { quantity: newQty }).catch(() => {});
-      } else {
-        const raw = sessionStorage.getItem('guestCart');
-        const cart: CartItem[] = raw ? JSON.parse(raw) : [];
-        sessionStorage.setItem(
-          'guestCart',
-          JSON.stringify(cart.map((i) => (i.productId === productId ? { ...i, quantity: newQty } : i)))
-        );
-      }
-      setCartCount(updated.reduce((s, i) => s + i.quantity, 0));
-    }, 2000);
+    // Save to backend/storage immediately
+    if (user) {
+      api.put(`/api/cart/items/${productId}`, { quantity: newQty }).catch(() => {});
+    } else {
+      const raw = sessionStorage.getItem('guestCart');
+      const cart: CartItem[] = raw ? JSON.parse(raw) : [];
+      sessionStorage.setItem(
+        'guestCart',
+        JSON.stringify(cart.map((i) => (i.productId === productId ? { ...i, quantity: newQty } : i)))
+      );
+    }
   }
 
   function removeItem(productId: string) {
@@ -120,27 +119,50 @@ export default function CartPage() {
                 {items.map((item) => (
                   <tr key={item.productId}>
                     <td style={{ fontWeight: 500 }}>{item.name}</td>
-                    <td>${parseFloat(item.price).toFixed(2)}</td>
+                    <td>₹{parseFloat(item.price).toFixed(2)}</td>
                     <td>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         <button
-                          className="btn btn-secondary"
-                          style={{ padding: '2px 10px', fontSize: 16 }}
+                          disabled={item.quantity <= 1}
+                          style={{
+                            width: 32,
+                            height: 32,
+                            padding: 0,
+                            border: '1px solid #cbd5e1',
+                            background: item.quantity <= 1 ? '#f1f5f9' : '#fff',
+                            borderRadius: 4,
+                            fontSize: 18,
+                            fontWeight: 700,
+                            color: item.quantity <= 1 ? '#cbd5e1' : '#334155',
+                            cursor: item.quantity <= 1 ? 'not-allowed' : 'pointer',
+                            transition: 'all 0.15s',
+                          }}
                           onClick={() => updateQuantity(item.productId, item.quantity - 1)}
                         >
-                          -
+                          −
                         </button>
-                        <span style={{ minWidth: 24, textAlign: 'center' }}>{item.quantity}</span>
+                        <span style={{ minWidth: 30, textAlign: 'center', fontWeight: 600 }}>{item.quantity}</span>
                         <button
-                          className="btn btn-secondary"
-                          style={{ padding: '2px 10px', fontSize: 16 }}
+                          style={{
+                            width: 32,
+                            height: 32,
+                            padding: 0,
+                            border: '1px solid #cbd5e1',
+                            background: '#fff',
+                            borderRadius: 4,
+                            fontSize: 18,
+                            fontWeight: 700,
+                            color: '#334155',
+                            cursor: 'pointer',
+                            transition: 'all 0.15s',
+                          }}
                           onClick={() => updateQuantity(item.productId, item.quantity + 1)}
                         >
                           +
                         </button>
                       </div>
                     </td>
-                    <td>${(parseFloat(item.price) * item.quantity).toFixed(2)}</td>
+                    <td>₹{(parseFloat(item.price) * item.quantity).toFixed(2)}</td>
                     <td>
                       <button
                         className="btn btn-danger"
@@ -166,7 +188,7 @@ export default function CartPage() {
             }}
           >
             <span style={{ fontSize: 18, fontWeight: 700 }}>
-              Total: ${total.toFixed(2)}
+              Total: ₹{total.toFixed(2)}
             </span>
             <Link
               to="/checkout"

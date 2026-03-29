@@ -13,7 +13,20 @@ export default function ProductsPage() {
     setLoading(true);
     api
       .get('/api/products', { params: search ? { search } : {} })
-      .then((res) => setProducts(res.data))
+      .then((res) => {
+        // Transform snake_case from server to camelCase for client
+        const transformed = res.data.map((p: Record<string, unknown>) => ({
+          id: p.id,
+          name: p.name,
+          description: p.description,
+          price: p.price,
+          stockStatus: p.stock_status,
+          categoryId: p.category_id,
+          imageUrls: p.image_urls,
+          quantityAvailable: p.quantity_available,
+        }));
+        setProducts(transformed);
+      })
       .catch(() => setProducts([]))
       .finally(() => setLoading(false));
   }, []);

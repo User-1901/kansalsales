@@ -5,6 +5,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import NavBar from './components/NavBar';
 import HomePage from './pages/HomePage';
 import ProductsPage from './pages/ProductsPage';
+import ProductDetailPage from './pages/ProductDetailPage';
 import CategoriesPage from './pages/CategoriesPage';
 import CartPage from './pages/CartPage';
 import LoginPage from './pages/LoginPage';
@@ -33,6 +34,7 @@ function App() {
                 <NavBar />
                 <Routes>
                   <Route path="/" element={<HomePage />} />
+                  <Route path="/products/:id" element={<ProductDetailPage />} />
                   <Route path="/products" element={<ProductsPage />} />
                   <Route path="/categories" element={<CategoriesPage />} />
                   <Route path="/cart" element={<CartPage />} />

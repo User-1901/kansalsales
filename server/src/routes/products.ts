@@ -25,7 +25,7 @@ router.get('/', async (req, res) => {
 
   try {
     const result = await pool.query(
-      `SELECT id, name, description, price::text, stock_status, category_id, image_urls, created_at, updated_at
+      `SELECT id, name, description, price::text, stock_status, category_id, image_urls, quantity_available, why_shop_message, created_at, updated_at
        FROM products ${where} ORDER BY created_at DESC`,
       params,
     );
@@ -39,7 +39,7 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT id, name, description, price::text, stock_status, category_id, image_urls, created_at, updated_at
+      `SELECT id, name, description, price::text, stock_status, category_id, image_urls, quantity_available, why_shop_message, created_at, updated_at
        FROM products WHERE id = $1`,
       [req.params.id],
     );
@@ -55,13 +55,15 @@ router.get('/:id', async (req, res) => {
 
 // POST / — create product (admin only)
 router.post('/', authenticate, requireAdmin, async (req, res) => {
-  const { name, description, price, stock_status, category_id, image_urls } = req.body as {
+  const { name, description, price, stock_status, category_id, image_urls, quantity_available, why_shop_message } = req.body as {
     name?: string;
     description?: string;
     price?: unknown;
     stock_status?: string;
     category_id?: string;
     image_urls?: unknown;
+    quantity_available?: unknown;
+    why_shop_message?: string;
   };
 
   const errors: string[] = [];
@@ -73,9 +75,16 @@ router.post('/', authenticate, requireAdmin, async (req, res) => {
     const priceNum = Number(price);
     if (isNaN(priceNum) || priceNum <= 0) errors.push('price must be a positive number');
   }
-  if (!stock_status || !['in_stock', 'out_of_stock'].includes(stock_status)) {
-    errors.push("stock_status must be 'in_stock' or 'out_of_stock'");
+  
+  let finalQty = 0;
+  if (quantity_available !== undefined && quantity_available !== null) {
+    const qtyNum = Number(quantity_available);
+    if (isNaN(qtyNum) || qtyNum < 0) errors.push('quantity_available must be a non-negative number');
+    else finalQty = qtyNum;
   }
+  
+  const finalStockStatus = finalQty === 0 ? 'out_of_stock' : 'in_stock';
+  
   if (image_urls !== undefined && !Array.isArray(image_urls)) {
     errors.push('image_urls must be an array of strings');
   }
@@ -87,16 +96,18 @@ router.post('/', authenticate, requireAdmin, async (req, res) => {
 
   try {
     const result = await pool.query(
-      `INSERT INTO products (name, description, price, stock_status, category_id, image_urls)
-       VALUES ($1, $2, $3, $4, $5, $6)
-       RETURNING id, name, description, price::text, stock_status, category_id, image_urls, created_at, updated_at`,
+      `INSERT INTO products (name, description, price, stock_status, category_id, image_urls, quantity_available, why_shop_message)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+       RETURNING id, name, description, price::text, stock_status, category_id, image_urls, quantity_available, why_shop_message, created_at, updated_at`,
       [
         String(name).trim(),
         description ?? null,
         Number(price),
-        stock_status,
+        finalStockStatus,
         category_id ?? null,
         image_urls ?? [],
+        finalQty,
+        why_shop_message ?? null,
       ],
     );
     res.status(201).json(result.rows[0]);
@@ -107,13 +118,15 @@ router.post('/', authenticate, requireAdmin, async (req, res) => {
 
 // PUT /:id — update product (admin only)
 router.put('/:id', authenticate, requireAdmin, async (req, res) => {
-  const { name, description, price, stock_status, category_id, image_urls } = req.body as {
+  const { name, description, price, stock_status, category_id, image_urls, quantity_available, why_shop_message } = req.body as {
     name?: string;
     description?: string;
     price?: unknown;
     stock_status?: string;
     category_id?: string | null;
     image_urls?: unknown;
+    quantity_available?: unknown;
+    why_shop_message?: string;
   };
 
   const errors: string[] = [];
@@ -123,8 +136,9 @@ router.put('/:id', authenticate, requireAdmin, async (req, res) => {
     const priceNum = Number(price);
     if (isNaN(priceNum) || priceNum <= 0) errors.push('price must be a positive number');
   }
-  if (stock_status !== undefined && !['in_stock', 'out_of_stock'].includes(stock_status)) {
-    errors.push("stock_status must be 'in_stock' or 'out_of_stock'");
+  if (quantity_available !== undefined && quantity_available !== null) {
+    const qtyNum = Number(quantity_available);
+    if (isNaN(qtyNum) || qtyNum < 0) errors.push('quantity_available must be a non-negative number');
   }
   if (image_urls !== undefined && !Array.isArray(image_urls)) {
     errors.push('image_urls must be an array of strings');
@@ -150,7 +164,15 @@ router.put('/:id', authenticate, requireAdmin, async (req, res) => {
     params.push(Number(price));
     setClauses.push(`price = $${params.length}`);
   }
-  if (stock_status !== undefined) {
+  if (quantity_available !== undefined) {
+    const qtyNum = Number(quantity_available);
+    params.push(qtyNum);
+    setClauses.push(`quantity_available = $${params.length}`);
+    // Auto-set stock_status based on quantity
+    params.push(qtyNum === 0 ? 'out_of_stock' : 'in_stock');
+    setClauses.push(`stock_status = $${params.length}`);
+  }
+  if (stock_status !== undefined && quantity_available === undefined) {
     params.push(stock_status);
     setClauses.push(`stock_status = $${params.length}`);
   }
@@ -161,6 +183,10 @@ router.put('/:id', authenticate, requireAdmin, async (req, res) => {
   if (image_urls !== undefined) {
     params.push(image_urls);
     setClauses.push(`image_urls = $${params.length}`);
+  }
+  if (why_shop_message !== undefined) {
+    params.push(why_shop_message);
+    setClauses.push(`why_shop_message = $${params.length}`);
   }
 
   if (setClauses.length === 0) {
@@ -174,7 +200,7 @@ router.put('/:id', authenticate, requireAdmin, async (req, res) => {
   try {
     const result = await pool.query(
       `UPDATE products SET ${setClauses.join(', ')} WHERE id = $${params.length}
-       RETURNING id, name, description, price::text, stock_status, category_id, image_urls, created_at, updated_at`,
+       RETURNING id, name, description, price::text, stock_status, category_id, image_urls, quantity_available, why_shop_message, created_at, updated_at`,
       params,
     );
     if (result.rowCount === 0) {

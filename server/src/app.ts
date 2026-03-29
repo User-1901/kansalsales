@@ -13,6 +13,7 @@ import cartRouter from './routes/cart.js';
 import contactRouter from './routes/contact.js';
 import adminsRouter from './routes/admins.js';
 import uploadRouter from './routes/upload.js';
+import ratingsRouter from './routes/ratings.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const uploadsDir = path.resolve(__dirname, '../../uploads');
@@ -36,6 +37,7 @@ app.get('/health', (_req, res) => {
 app.use('/api/auth', authRouter);
 app.use('/api/categories', categoriesRouter);
 app.use('/api/products', productsRouter);
+app.use('/api/ratings', ratingsRouter);
 app.use('/api/cart', cartRouter);
 app.use('/api/contact', contactRouter);
 app.use('/api/admins', adminsRouter);

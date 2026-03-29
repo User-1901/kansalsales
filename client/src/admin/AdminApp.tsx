@@ -6,6 +6,7 @@ import AdminDashboard from './AdminDashboard';
 import AdminProductsPage from './AdminProductsPage';
 import AdminCategoriesPage from './AdminCategoriesPage';
 import AdminUsersPage from './AdminUsersPage';
+import AdminRatingsPage from './AdminRatingsPage';
 
 export default function AdminApp() {
   const { user } = useAuth();
@@ -33,6 +34,7 @@ export default function AdminApp() {
         <Route index element={<AdminDashboard />} />
         <Route path="products" element={<AdminProductsPage />} />
         <Route path="categories" element={<AdminCategoriesPage />} />
+        <Route path="ratings" element={<AdminRatingsPage />} />
         <Route path="users" element={<AdminUsersPage />} />
         <Route path="*" element={<Navigate to="/admin" replace />} />
       </Route>
