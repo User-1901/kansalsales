@@ -16,16 +16,16 @@ await db.waitReady;
 
 // First, ensure categories exist
 const categories = [
-  { id: randomUUID(), name: 'Dairy', description: 'Milk, Yogurt, Cheese' },
-  { id: randomUUID(), name: 'Vegetables', description: 'Fresh Vegetables' },
-  { id: randomUUID(), name: 'Fruits', description: 'Fresh Fruits' },
+  { id: randomUUID(), name: 'Dairy' },
+  { id: randomUUID(), name: 'Vegetables' },
+  { id: randomUUID(), name: 'Fruits' },
 ];
 
 for (const cat of categories) {
   await db.query(
-    `INSERT INTO categories (id, name, description) VALUES ($1, $2, $3)
+    `INSERT INTO categories (id, name) VALUES ($1, $2)
      ON CONFLICT (name) DO NOTHING`,
-    [cat.id, cat.name, cat.description],
+    [cat.id, cat.name],
   );
 }
 
@@ -76,9 +76,8 @@ const products = [
 for (const prod of products) {
   await db.query(
     `INSERT INTO products (name, description, price, stock_status, category_id, image_urls, quantity_available)
-     VALUES ($1, $2, $3, $4, $5, $6, $7)
-     ON CONFLICT (name) DO NOTHING`,
-    [prod.name, prod.description, prod.price, prod.stock_status, prod.category_id, JSON.stringify(prod.image_urls), prod.quantity_available],
+     VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+    [prod.name, prod.description, prod.price, prod.stock_status, prod.category_id, prod.image_urls, prod.quantity_available],
   );
 }
 

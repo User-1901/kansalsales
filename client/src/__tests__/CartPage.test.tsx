@@ -25,7 +25,7 @@ describe('CartPage', () => {
   function renderCartPage(user = null) {
     render(
       <MemoryRouter>
-        <AuthContext.Provider value={{ user, cartCount: 0, login: vi.fn(), logout: vi.fn(), setCartCount: setCartCountMock }}>
+        <AuthContext.Provider value={{ user: null, cartCount: 0, isLoading: false, login: vi.fn(), logout: vi.fn(), setCartCount: setCartCountMock }}>
           <CartPage />
         </AuthContext.Provider>
       </MemoryRouter>

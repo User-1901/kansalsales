@@ -24,7 +24,7 @@ function renderAdminLayout({ user = null }: RenderOptions = {}) {
 
   render(
     <MemoryRouter initialEntries={['/admin']}>
-      <AuthContext.Provider value={{ user, cartCount: 0, login, logout, setCartCount }}>
+      <AuthContext.Provider value={{ user, cartCount: 0, isLoading: false, login, logout, setCartCount }}>
         <Routes>
           <Route path="/" element={<div data-testid="home-page">Home</div>} />
           <Route path="/admin" element={<AdminLayout />}>

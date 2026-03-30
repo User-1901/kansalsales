@@ -25,7 +25,7 @@ router.get('/', async (req, res) => {
 
   try {
     const result = await pool.query(
-      `SELECT id, name, description, price::text, stock_status, category_id, image_urls, quantity_available, why_shop_message, created_at, updated_at
+      `SELECT id, name, description, price::text, stock_status, category_id, image_urls, quantity_available, why_shop_message, discount_percentage, created_at, updated_at
        FROM products ${where} ORDER BY created_at DESC`,
       params,
     );
@@ -39,7 +39,7 @@ router.get('/', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const result = await pool.query(
-      `SELECT id, name, description, price::text, stock_status, category_id, image_urls, quantity_available, why_shop_message, created_at, updated_at
+      `SELECT id, name, description, price::text, stock_status, category_id, image_urls, quantity_available, why_shop_message, discount_percentage, created_at, updated_at
        FROM products WHERE id = $1`,
       [req.params.id],
     );
@@ -55,7 +55,7 @@ router.get('/:id', async (req, res) => {
 
 // POST / — create product (admin only)
 router.post('/', authenticate, requireAdmin, async (req, res) => {
-  const { name, description, price, stock_status, category_id, image_urls, quantity_available, why_shop_message } = req.body as {
+  const { name, description, price, stock_status, category_id, image_urls, quantity_available, why_shop_message, discount_percentage } = req.body as {
     name?: string;
     description?: string;
     price?: unknown;
@@ -64,6 +64,7 @@ router.post('/', authenticate, requireAdmin, async (req, res) => {
     image_urls?: unknown;
     quantity_available?: unknown;
     why_shop_message?: string;
+    discount_percentage?: unknown;
   };
 
   const errors: string[] = [];
@@ -83,6 +84,13 @@ router.post('/', authenticate, requireAdmin, async (req, res) => {
     else finalQty = qtyNum;
   }
   
+  let finalDiscount = 0;
+  if (discount_percentage !== undefined && discount_percentage !== null) {
+    const discountNum = Number(discount_percentage);
+    if (isNaN(discountNum) || discountNum < 0 || discountNum > 100) errors.push('discount_percentage must be between 0 and 100');
+    else finalDiscount = discountNum;
+  }
+  
   const finalStockStatus = finalQty === 0 ? 'out_of_stock' : 'in_stock';
   
   if (image_urls !== undefined && !Array.isArray(image_urls)) {
@@ -96,9 +104,9 @@ router.post('/', authenticate, requireAdmin, async (req, res) => {
 
   try {
     const result = await pool.query(
-      `INSERT INTO products (name, description, price, stock_status, category_id, image_urls, quantity_available, why_shop_message)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-       RETURNING id, name, description, price::text, stock_status, category_id, image_urls, quantity_available, why_shop_message, created_at, updated_at`,
+      `INSERT INTO products (name, description, price, stock_status, category_id, image_urls, quantity_available, why_shop_message, discount_percentage)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+       RETURNING id, name, description, price::text, stock_status, category_id, image_urls, quantity_available, why_shop_message, discount_percentage, created_at, updated_at`,
       [
         String(name).trim(),
         description ?? null,
@@ -108,6 +116,7 @@ router.post('/', authenticate, requireAdmin, async (req, res) => {
         image_urls ?? [],
         finalQty,
         why_shop_message ?? null,
+        finalDiscount,
       ],
     );
     res.status(201).json(result.rows[0]);
@@ -118,7 +127,7 @@ router.post('/', authenticate, requireAdmin, async (req, res) => {
 
 // PUT /:id — update product (admin only)
 router.put('/:id', authenticate, requireAdmin, async (req, res) => {
-  const { name, description, price, stock_status, category_id, image_urls, quantity_available, why_shop_message } = req.body as {
+  const { name, description, price, stock_status, category_id, image_urls, quantity_available, why_shop_message, discount_percentage } = req.body as {
     name?: string;
     description?: string;
     price?: unknown;
@@ -127,6 +136,7 @@ router.put('/:id', authenticate, requireAdmin, async (req, res) => {
     image_urls?: unknown;
     quantity_available?: unknown;
     why_shop_message?: string;
+    discount_percentage?: unknown;
   };
 
   const errors: string[] = [];
@@ -142,6 +152,10 @@ router.put('/:id', authenticate, requireAdmin, async (req, res) => {
   }
   if (image_urls !== undefined && !Array.isArray(image_urls)) {
     errors.push('image_urls must be an array of strings');
+  }
+  if (discount_percentage !== undefined && discount_percentage !== null) {
+    const discountNum = Number(discount_percentage);
+    if (isNaN(discountNum) || discountNum < 0 || discountNum > 100) errors.push('discount_percentage must be between 0 and 100');
   }
 
   if (errors.length > 0) {
@@ -188,6 +202,10 @@ router.put('/:id', authenticate, requireAdmin, async (req, res) => {
     params.push(why_shop_message);
     setClauses.push(`why_shop_message = $${params.length}`);
   }
+  if (discount_percentage !== undefined) {
+    params.push(Number(discount_percentage));
+    setClauses.push(`discount_percentage = $${params.length}`);
+  }
 
   if (setClauses.length === 0) {
     res.status(400).json({ errors: ['No fields provided for update'] });
@@ -200,7 +218,7 @@ router.put('/:id', authenticate, requireAdmin, async (req, res) => {
   try {
     const result = await pool.query(
       `UPDATE products SET ${setClauses.join(', ')} WHERE id = $${params.length}
-       RETURNING id, name, description, price::text, stock_status, category_id, image_urls, quantity_available, why_shop_message, created_at, updated_at`,
+       RETURNING id, name, description, price::text, stock_status, category_id, image_urls, quantity_available, why_shop_message, discount_percentage, created_at, updated_at`,
       params,
     );
     if (result.rowCount === 0) {

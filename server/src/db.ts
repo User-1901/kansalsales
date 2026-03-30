@@ -89,9 +89,12 @@ export const pool = {
   query: async (text: string, params?: unknown[]) => {
     await dbReady; // wait for init to finish
     const result = await pglite.query(text, params);
+    // For SELECT queries: use rows.length
+    // For INSERT/UPDATE/DELETE: use affectedRows if available, otherwise rows.length
+    const rowCount = result.rows && result.rows.length > 0 ? result.rows.length : (result.affectedRows ?? 0);
     return {
       rows: result.rows as Record<string, unknown>[],
-      rowCount: (result.affectedRows ?? result.rows.length) as number,
+      rowCount: rowCount as number,
     };
   },
 };

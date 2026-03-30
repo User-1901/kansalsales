@@ -16,7 +16,7 @@ function renderNavBar({ user = null, cartCount = 0 }: RenderOptions = {}) {
 
   render(
     <MemoryRouter>
-      <AuthContext.Provider value={{ user, cartCount, login, logout, setCartCount }}>
+      <AuthContext.Provider value={{ user, cartCount, isLoading: false, login, logout, setCartCount }}>
         <NavBar />
       </AuthContext.Provider>
     </MemoryRouter>,

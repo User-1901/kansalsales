@@ -5,6 +5,7 @@ import crypto from 'crypto';
 import rateLimit from 'express-rate-limit';
 import { pool } from '../db.js';
 import { sendVerificationEmail, sendPasswordResetEmail } from '../services/email.js';
+import { authenticate } from '../middleware/auth.js';
 
 const router = Router();
 
@@ -193,6 +194,33 @@ router.post('/reset-password', async (req: Request, res: Response) => {
   await pool.query('UPDATE password_reset_tokens SET used = TRUE WHERE id = $1', [row.id]);
 
   res.status(200).json({ message: 'Password updated successfully. You can now log in.' });
+});
+
+// ── Get current user session ─────────────────────────────────────────────────
+router.get('/me', authenticate, async (req: Request, res: Response) => {
+  try {
+    const result = await pool.query(
+      'SELECT id, email, display_name, role FROM users WHERE id = $1',
+      [req.user!.id],
+    );
+
+    if (!result.rowCount || result.rowCount === 0) {
+      res.status(404).json({ error: 'User not found' });
+      return;
+    }
+
+    const user = result.rows[0];
+    res.status(200).json({
+      user: {
+        id: user.id,
+        email: user.email,
+        displayName: user.display_name,
+        role: user.role,
+      },
+    });
+  } catch {
+    res.status(500).json({ error: 'Failed to retrieve user information' });
+  }
 });
 
 export default router;

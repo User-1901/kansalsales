@@ -14,6 +14,7 @@ import contactRouter from './routes/contact.js';
 import adminsRouter from './routes/admins.js';
 import uploadRouter from './routes/upload.js';
 import ratingsRouter from './routes/ratings.js';
+import checkoutRouter from './routes/checkout.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const uploadsDir = path.resolve(__dirname, '../../uploads');
@@ -42,5 +43,6 @@ app.use('/api/cart', cartRouter);
 app.use('/api/contact', contactRouter);
 app.use('/api/admins', adminsRouter);
 app.use('/api/upload', uploadRouter);
+app.use(checkoutRouter);
 
 export default app;

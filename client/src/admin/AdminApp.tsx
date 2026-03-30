@@ -9,7 +9,27 @@ import AdminUsersPage from './AdminUsersPage';
 import AdminRatingsPage from './AdminRatingsPage';
 
 export default function AdminApp() {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
+
+  // Show loading state while verifying session
+  if (isLoading) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: '#0f172a',
+      }}>
+        <div style={{
+          fontSize: 24,
+          color: '#f8fafc',
+        }}>
+          Loading...
+        </div>
+      </div>
+    );
+  }
 
   return (
     <Routes>

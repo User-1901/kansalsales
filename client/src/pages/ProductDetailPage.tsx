@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import axios from '../api/axios';
+import { useAuth } from '../contexts/AuthContext';
 import '../styles/ProductDetailPage.css';
 
+// ── Data Types ──────────────────────────────────────────────────────────────
+// Defines the structure of a Product object returned from the API
 interface Product {
   id: string;
   name: string;
@@ -13,8 +16,10 @@ interface Product {
   stock_status: string;
   quantity_available: number;
   why_shop_message?: string;
+  discount_percentage?: number;
 }
 
+// Defines the structure of a Review object (not currently used but prepared for future)
 interface Review {
   id: string;
   user_id: string;
@@ -25,86 +30,140 @@ interface Review {
   created_at: string;
 }
 
+// ── Main Component ──────────────────────────────────────────────────────────
+// This page displays detailed information about a single product
+// Users can view images, description, price, and add items to cart
 const ProductDetailPage: React.FC = () => {
+  // Extract product ID from the URL (e.g., /products/[ID])
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  const [product, setProduct] = useState<Product | null>(null);
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [quantity, setQuantity] = useState(1);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  
+  // Get current user info and cart manipulation functions from AuthContext
+  const { user, cartCount, setCartCount } = useAuth();
+  
+  // STATE VARIABLES - Track component data
+  const [product, setProduct] = useState<Product | null>(null);  // Stores the product data
+  const [reviews, setReviews] = useState<Review[]>([]);          // Stores product reviews
+  const [quantity, setQuantity] = useState(1);                   // How many items user wants to add
+  const [loading, setLoading] = useState(true);                  // Shows loading spinner while fetching
+  const [error, setError] = useState<string | null>(null);       // Stores error messages
 
+  // ── FETCH PRODUCT DATA ON PAGE LOAD ────────────────────────────────────
+  // This runs once when component mounts or when product ID changes
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         setError(null);
 
+        // Validate that product ID exists in URL
         if (!id) {
           setError('Product ID not found');
           setLoading(false);
           return;
         }
 
-        // Fetch product details
+        // API Call: Get product details from server using the product ID
         const productResponse = await axios.get(`/api/products/${id}`);
         setProduct(productResponse.data);
 
-        // Fetch reviews for this product
+        // API Call: Try to get reviews for this product (currently not implemented on server)
         try {
           const reviewsResponse = await axios.get(`/api/reviews?product_id=${id}`);
           setReviews(reviewsResponse.data || []);
         } catch {
-          // Reviews endpoint might not exist, that's ok
+          // If reviews endpoint fails, just continue without reviews
           setReviews([]);
         }
       } catch (err) {
+        // If product not found or API error occurs, show error message
         setError('Product not found');
         console.error('Error fetching product:', err);
       } finally {
+        // Stop loading spinner regardless of success/failure
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [id]);
+  }, [id]); // Re-fetch if product ID changes
 
+  // ── ADD TO CART HANDLER ─────────────────────────────────────────────────
+  // Handles adding the selected quantity of product to the user's cart
   const handleAddToCart = async () => {
+    if (!product) return;
+
     try {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        navigate('/login');
-        return;
+      if (user) {
+        // Logged-in user: Add item to database cart via API
+        await axios.post('/api/cart/items', {
+          productId: product.id,
+          quantity: quantity,
+        });
+        // Update cart count in the app header
+        setCartCount(cartCount + quantity);
+      } else {
+        // Guest user: Store cart in browser's sessionStorage (temporary localStorage)
+        const raw = sessionStorage.getItem('guestCart');
+        const cart: Array<{ productId: string; name: string; price: string; quantity: number }> =
+          raw ? JSON.parse(raw) : [];
+        
+        // Check if product already exists in guest cart
+        const existing = cart.find((i) => i.productId === product.id);
+        if (existing) {
+          // If product exists, increase quantity
+          existing.quantity += quantity;
+        } else {
+          // If new product, add it to cart
+          cart.push({
+            productId: product.id,
+            name: product.name,
+            price: product.price,
+            quantity: quantity,
+          });
+        }
+        // Save updated cart back to sessionStorage
+        sessionStorage.setItem('guestCart', JSON.stringify(cart));
+        // Update cart count in the app header
+        setCartCount(cartCount + quantity);
       }
 
-      await axios.post('/api/cart', {
-        product_id: id,
-        quantity: quantity,
-      });
-
+      // Show success message and reset quantity selector
       alert('Product added to cart!');
       setQuantity(1);
     } catch (err) {
+      // Handle any errors during add to cart operation
       console.error('Error adding to cart:', err);
       alert('Failed to add to cart');
     }
   };
 
+  // ── LOADING STATE ───────────────────────────────────────────────────────
+  // Show loading message while fetching product data
   if (loading) {
     return <div className="product-detail-loading">Loading...</div>;
   }
 
+  // ── ERROR STATE ─────────────────────────────────────────────────────────
+  // Show error message if product not found or API failed
   if (error || !product) {
     return <div className="product-detail-error">{error || 'Product not found'}</div>;
   }
 
-  const imageUrl = product.image_urls?.[0] || '';
-  const displayPrice = parseFloat(product.price).toFixed(2);
-  const averageRating =
+  // ── CALCULATE DISPLAY VALUES ────────────────────────────────────────────
+  // Prepare data for display
+  const imageUrl = product.image_urls?.[0] || '';        // Get first image URL
+  const originalPrice = parseFloat(product.price);       // Parse original price
+  const discount = product.discount_percentage || 0;     // Get discount percentage
+  const discountedPrice = discount > 0 
+    ? (originalPrice - (originalPrice * discount / 100)).toFixed(2)
+    : originalPrice.toFixed(2);                          // Calculate discounted price
+  const displayPrice = discountedPrice;                  // Use discounted price for display
+  const averageRating =                                   // Calculate average rating from reviews
     reviews.length > 0
       ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
       : 0;
 
+  // ── RENDER PAGE ─────────────────────────────────────────────────────────
   return (
     <div className="product-main-container">
       {/* Left: Product Image */}
@@ -118,7 +177,17 @@ const ProductDetailPage: React.FC = () => {
         <h1 className="product-name">{product.name}</h1>
 
         <div className="product-price-rating">
-          <span className="product-price">₹{displayPrice}</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <span className="product-price">₹{displayPrice}</span>
+            {discount > 0 && (
+              <>
+                <span style={{ textDecoration: 'line-through', color: '#94a3b8', fontSize: 14 }}>₹{originalPrice.toFixed(2)}</span>
+                <span style={{ background: '#dc2626', color: '#fff', padding: '4px 12px', borderRadius: 4, fontSize: 12, fontWeight: 700 }}>
+                  -{discount}% OFF
+                </span>
+              </>
+            )}
+          </div>
           {reviews.length > 0 && (
             <span className="product-rating">
               ⭐ {averageRating} ({reviews.length} reviews)

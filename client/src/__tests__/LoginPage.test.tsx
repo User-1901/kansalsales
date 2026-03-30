@@ -18,6 +18,7 @@ describe('LoginPage', () => {
         <AuthContext.Provider value={{
           user: null,
           cartCount: 0,
+          isLoading: false,
           login: loginMock,
           logout: logoutMock,
           setCartCount: setCartCountMock

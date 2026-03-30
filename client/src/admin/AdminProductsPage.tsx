@@ -5,10 +5,10 @@ import ConfirmationDialog from '../components/ConfirmationDialog';
 interface Category { id: string; name: string; }
 interface Product {
   id: string; name: string; description: string;
-  price: string; stock_status: string; category_id: string; image_urls: string[]; quantity_available?: number;
+  price: string; stock_status: string; category_id: string; image_urls: string[]; quantity_available?: number; why_shop_message?: string; discount_percentage?: number;
 }
 
-const EMPTY_FORM = { name: '', description: '', price: '', categoryId: '', stockStatus: 'in_stock', quantity: '0' };
+const EMPTY_FORM = { name: '', description: '', price: '', categoryId: '', stockStatus: 'in_stock', quantity: '0', whyShopMessage: '', discountPercentage: '0' };
 
 export default function AdminProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -61,6 +61,8 @@ export default function AdminProductsPage() {
       categoryId: p.category_id || '',
       stockStatus: p.stock_status || 'in_stock',
       quantity: String(p.quantity_available || 0),
+      whyShopMessage: p.why_shop_message || '',
+      discountPercentage: String(p.discount_percentage || 0),
     });
     setImageFiles([]);
     setImagePreviews(p.image_urls); // show existing images
@@ -150,6 +152,8 @@ export default function AdminProductsPage() {
         quantity_available: parseInt(form.quantity) || 0,
         stock_status: parseInt(form.quantity) === 0 ? 'out_of_stock' : 'in_stock',
         image_urls: allImageUrls,
+        why_shop_message: form.whyShopMessage.trim() || null,
+        discount_percentage: parseFloat(form.discountPercentage) || 0,
       };
 
       if (editingId) {
@@ -254,9 +258,30 @@ export default function AdminProductsPage() {
               </div>
             </div>
 
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+              <div className="form-group">
+                <label htmlFor="p-discount">Discount (%) - Optional</label>
+                <input id="p-discount" type="number" step="0.01" min="0" max="100" value={form.discountPercentage} onChange={set('discountPercentage')} placeholder="0.00" />
+                <small style={{ color: '#94a3b8', marginTop: 4, display: 'block' }}>e.g., 10 for 10% off</small>
+              </div>
+              <div className="form-group">
+                <label htmlFor="p-discount-price">Discounted Price (Auto-calculated)</label>
+                <input id="p-discount-price" type="number" step="0.01" min="0" value={
+                  form.price && form.discountPercentage
+                    ? (parseFloat(form.price) - (parseFloat(form.price) * parseFloat(form.discountPercentage) / 100)).toFixed(2)
+                    : form.price
+                } disabled style={{ background: '#f1f5f9', cursor: 'not-allowed' }} placeholder="0.00" />
+              </div>
+            </div>
+
             <div className="form-group">
               <label htmlFor="p-desc">Description</label>
               <textarea id="p-desc" rows={3} value={form.description} onChange={set('description')} placeholder="Short product description…" style={{ resize: 'vertical' }} />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="p-why-shop">Why Shop With Us?</label>
+              <textarea id="p-why-shop" rows={3} value={form.whyShopMessage} onChange={set('whyShopMessage')} placeholder="e.g., 🚚 Fast Delivery\n💰 Best Prices\n📦 Wide Assortment" style={{ resize: 'vertical' }} />
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
@@ -397,7 +422,29 @@ export default function AdminProductsPage() {
                         </div>
                       </div>
                     </td>
-                    <td style={{ fontWeight: 700, color: '#15803d' }}>₹{parseFloat(p.price).toFixed(2)}</td>
+                    <td style={{ fontWeight: 700, color: '#15803d' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <span>₹{parseFloat(p.price).toFixed(2)}</span>
+                        {p.discount_percentage && p.discount_percentage > 0 && (
+                          <div style={{ 
+                            background: '#fef2f2', 
+                            color: '#dc2626', 
+                            padding: '2px 8px', 
+                            borderRadius: 4, 
+                            fontSize: 11, 
+                            fontWeight: 700,
+                            whiteSpace: 'nowrap'
+                          }}>
+                            -{p.discount_percentage}%
+                          </div>
+                        )}
+                      </div>
+                      {p.discount_percentage && p.discount_percentage > 0 && (
+                        <div style={{ fontSize: 12, color: '#16a34a', marginTop: 2 }}>
+                          Sale: ₹{(parseFloat(p.price) - (parseFloat(p.price) * p.discount_percentage / 100)).toFixed(2)}
+                        </div>
+                      )}
+                    </td>
                     <td style={{ fontWeight: 700, color: '#334155' }}>{p.quantity_available || 0}</td>
                     <td style={{ color: cat ? '#334155' : '#94a3b8', fontSize: 13 }}>{cat ? cat.name : 'None'}</td>
                     <td>
