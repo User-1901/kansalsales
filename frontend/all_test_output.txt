@@ -1,0 +1,25 @@
+﻿
+[1m[7m[36m RUN [39m[27m[22m [36mv2.1.9 [39m[90mC:/Users/ishan/Documents/CODE/Kansalsales/client[39m
+
+ [32mΓ£ô[39m src/__tests__/AdminLayout.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[90m 56[2mms[22m[39m
+ [32mΓ£ô[39m src/__tests__/ConfirmationDialog.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[90m 237[2mms[22m[39m
+ [32mΓ£ô[39m src/__tests__/NavBar.test.tsx [2m([22m[2m5 tests[22m[2m)[22m[90m 189[2mms[22m[39m
+ [32mΓ£ô[39m src/__tests__/AdminCategoriesPage.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 549[2mms[22m[39m
+ [32mΓ£ô[39m src/__tests__/CartPage.test.tsx [2m([22m[2m6 tests[22m[2m)[22m[33m 656[2mms[22m[39m
+ [32mΓ£ô[39m src/__tests__/ContactPage.test.tsx [2m([22m[2m3 tests[22m[2m)[22m[33m 985[2mms[22m[39m
+   [33m[2mΓ£ô[22m[39m ContactPage[2m > [22msubmits successfully and shows confirmation message [33m788[2mms[22m[39m
+ [32mΓ£ô[39m src/__tests__/LoginPage.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 1246[2mms[22m[39m
+   [33m[2mΓ£ô[22m[39m LoginPage[2m > [22mcalls api and logs in on success [33m528[2mms[22m[39m
+   [33m[2mΓ£ô[22m[39m LoginPage[2m > [22mshows error on failure [33m530[2mms[22m[39m
+ [32mΓ£ô[39m src/__tests__/AdminProductsPage.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 1416[2mms[22m[39m
+   [33m[2mΓ£ô[22m[39m AdminProductsPage[2m > [22madds a new product [33m678[2mms[22m[39m
+   [33m[2mΓ£ô[22m[39m AdminProductsPage[2m > [22mloads product into form for editing and confirms update [33m485[2mms[22m[39m
+ [32mΓ£ô[39m src/__tests__/RegisterPage.test.tsx [2m([22m[2m4 tests[22m[2m)[22m[33m 1796[2mms[22m[39m
+   [33m[2mΓ£ô[22m[39m RegisterPage[2m > [22msubmits successfully and shows success message [33m773[2mms[22m[39m
+   [33m[2mΓ£ô[22m[39m RegisterPage[2m > [22mhandles duplicate email (409) conflict [33m834[2mms[22m[39m
+
+[2m Test Files [22m [1m[32m9 passed[39m[22m[90m (9)[39m
+[2m      Tests [22m [1m[32m37 passed[39m[22m[90m (37)[39m
+[2m   Start at [22m 18:27:51
+[2m   Duration [22m 3.51s[2m (transform 610ms, setup 846ms, collect 3.91s, tests 7.13s, environment 6.54s, prepare 1.43s)[22m
+

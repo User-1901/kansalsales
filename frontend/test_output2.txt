@@ -1,0 +1,35 @@
+﻿
+[1m[7m[36m RUN [39m[27m[22m [36mv2.1.9 [39m[90mC:/Users/ishan/Documents/CODE/Kansalsales/client[39m
+
+ [31mΓ¥»[39m src/__tests__/AdminProductsPage.test.tsx [2m([22m[2m4 tests[22m[2m | [22m[31m1 failed[39m[2m | [22m[33m3 skipped[39m[2m)[22m[33m 691[2mms[22m[39m
+[31m   [31m├ù[31m AdminProductsPage[2m > [22madds a new product[33m 690[2mms[22m[31m[39m
+[31m     ΓåÆ expected "wrap" to be called with arguments: [ '/api/products', ΓÇª(1) ][90m
+
+Received: 
+
+[1m  1st wrap call:
+
+[22m[2m  Array [[22m
+[2m    "/api/products",[22m
+[2m    Object {[22m
+[2m      "categoryId": null,[22m
+[2m      "description": "",[22m
+[2m      "imageUrls": Array [[22m
+[2m        "http://img.com",[22m
+[2m      ],[22m
+[2m      "name": "Phone",[22m
+[32m-     "price": "499.00",[90m
+[31m+     "price": "499",[90m
+[2m      "stockStatus": "in_stock",[22m
+[2m    },[22m
+[2m  ][22m
+[31m[90m
+
+Number of calls: [1m1[22m
+[31m[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m1 failed[39m[22m[2m | [22m[33m3 skipped[39m[90m (4)[39m
+[2m   Start at [22m 18:26:25
+[2m   Duration [22m 1.75s[2m (transform 77ms, setup 70ms, collect 228ms, tests 691ms, environment 427ms, prepare 115ms)[22m
+

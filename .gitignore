@@ -33,3 +33,15 @@ Thumbs.db
 
 # TypeScript
 *.tsbuildinfo
+
+# Database
+pgdata/
+
+# Uploads
+uploads/
+
+# Test output
+*.test_output.txt
+
+# Vite
+frontend/dist/

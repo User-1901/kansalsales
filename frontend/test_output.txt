@@ -1,0 +1,442 @@
+﻿
+[1m[7m[36m RUN [39m[27m[22m [36mv2.1.9 [39m[90mC:/Users/ishan/Documents/CODE/Kansalsales/client[39m
+
+ [31mΓ¥»[39m src/__tests__/AdminProductsPage.test.tsx [2m([22m[2m4 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[90m 298[2mms[22m[39m
+[31m   [31m├ù[31m AdminProductsPage[2m > [22madds a new product[90m 19[2mms[22m[31m[39m
+[31m     ΓåÆ Found a label with the text of: Name, however no form control was found associated to that label. Make sure you're using the "for" attribute or "aria-labelledby" attribute correctly.
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div>[31m
+      [36m<h1[31m
+        [33mstyle[31m=[32m"margin-bottom: 20px;"[31m
+      [36m>[31m
+        [0mManage Products[0m
+      [36m</h1>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"card"[31m
+        [33mstyle[31m=[32m"padding: 24px; margin-bottom: 32px;"[31m
+      [36m>[31m
+        [36m<h3[31m
+          [33mstyle[31m=[32m"margin-top: 0px; margin-bottom: 16px;"[31m
+        [36m>[31m
+          [0mAdd Product[0m
+        [36m</h3>[31m
+        [36m<form[31m
+          [33mstyle[31m=[32m"display: flex; flex-direction: column; gap: 16px;"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mstyle[31m=[32m"display: grid; grid-template-columns: 1fr 1fr; gap: 16px;"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"form-group"[31m
+            [36m>[31m
+              [36m<label>[31m
+                [0mName[0m
+              [36m</label>[31m
+              [36m<input[31m
+                [33mrequired[31m=[32m""[31m
+                [33mtype[31m=[32m"text"[31m
+                [33mvalue[31m=[32m""[31m
+              [36m/>[31m
+            [36m</div>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"form-group"[31m
+            [36m>[31m
+              [36m<label>[31m
+                [0mPrice[0m
+              [36m</label>[31m
+              [36m<input[31m
+                [33mrequired[31m=[32m""[31m
+                [33mstep[31m=[32m"0.01"[31m
+                [33mtype[31m=[32m"number"[31m
+                [33mvalue[31m=[32m""[31m
+              [36m/>[31m
+            [36m</div>[31m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"form-group"[31m
+          [36m>[31m
+            [36m<label>[31m
+              [0mDescription[0m
+            [36m</label>[31m
+            [36m<textarea[31m
+              [33mrows[31m=[32m"3"[31m
+            [36m/>[31m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mstyle[31m=[32m"display: grid; grid-template-columns: 1fr 1fr; gap: 16px;"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"form-group"[31m
+            [36m>[31m
+              [36m<label>[31m
+                [0mCategory[0m
+              [36m</label>[31m
+              [36m<select>[31m
+                [36m<option[31m
+                  [33mvalue[31m=[32m""[31m
+                [36m>[31m
+                  [0mNo Category[0m
+                [36m</option>[31m
+                [36m<option[31m
+                  [33mvalue[31m=[32m"c1"[31m
+                [36m>[31m
+                  [0mElectronics[0m
+                [36m</option>[31m
+              [36m</select>[31m
+            [36m</div>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"form-group"[31m
+            [36m>[31m
+              [36m<label>[31m
+                [0mStock Status[0m
+              [36m</label>[31m
+              [36m<select>[31m
+                [36m<option[31m
+                  [33mvalue[31m=[32m"in_stock"[31m
+                [36m>[31m
+                  [0mIn Stock[0m
+                [36m</option>[31m
+                [36m<option[31m
+                  [33mvalue[31m=[32m"out_of_stock"[31m
+                [36m>[31m
+                  [0mOut of Stock[0m
+                [36m</option>[31m
+              [36m</select>[31m
+            [36m</div>[31m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"form-group"[31m
+          [36m>[31m
+            [36m<label>[31m
+              [0mImage URLs (comma separated)[0m
+            [36m</label>[31m
+            [36m<input[31m
+              [33mtype[31m=[32m"text"[31m
+              [33mvalue[31m=[32m""[31m
+            [36m/>[31m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mstyle[31m=[32m"display: flex; gap: 12px; margin-top: 8px;"[31m
+          [36m>[31m
+            [36m<button[31m
+              [33mclass[31m=[32m"btn btn-primary"[31m
+              [33mtype[31m=[32m"submit"[31m
+            [36m>[31m
+              [0mAdd Product[0m
+            [36m</button>[31m
+          [36m</div>[31m
+        [36m</form>[31m
+      [36m</div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"card"[31m
+        [33mstyle[31m=[32m"overflow-x: auto;"[31m
+      [36m>[31m
+        [36m<table[31m
+          [33mclass[31m=[32m"data-table"[31m
+        [36m>[31m
+          [36m<thead>[31m
+            [36m<tr>[31m
+              [36m<th>[31m
+                [0mImage[0m
+              [36m</th>[31m
+              [36m<th>[31m
+                [0mName[0m
+              [36m</th>[31m
+              [36m<th>[31m
+                [0mPrice[0m
+              [36m</th>[31m
+              [36m<th>[31m
+                [0mCategory[0m
+              [36m</th>[31m
+              [36m<th>[31m
+                [0mStatus[0m
+              [36m</th>[31m
+              [36m<th[31m
+                [33mstyle[31m=[32m"width: 140px;"[31m
+              [36m>[31m
+                [0mActions[0m
+              [36m</th>[31m
+            [36m</tr>[31m
+          [36m</thead>[31m
+          [36m<tbody>[31m
+            [36m<tr>[31m
+              [36m<td>[31m
+                [36m<img[31m
+                  [33malt[31m=[32m""[31m
+                  [33msrc[31m=[32m"http://example.com/lap.jpg"[31m
+                  [33mstyle[31m=[32m"width: 40px; height: 40px; object-fit: cover; border-radius: 4px;"[31m
+                [36m/>[31m
+              [36m</td>[31m
+              [36m<td[31m
+                [33mstyle[31m=[32m"font-weight: 500;"[31m
+              [36m>[31m
+                [0mLaptop[0m
+              [36m</td>[31m
+              [36m<td>[31m
+                [0m$[0m
+                [0m999.99[0m
+              [36m</td>[31m
+              [36m<td>[31m
+                [0mElectronics[0m
+              [36m</td>[31m
+              [36m<td>[31m
+                [36m<span[31m
+                  [33mstyle[31m=[32m"padding: 4px 8px; border-radius: 12px; font-size: 12px; background: rgb(220, 252, 231); color: rgb(22, 101, 52);"[31m
+                [36m>[31m
+                  [0mIn Stock[0m
+                [36m</span>[31m
+              [36m</td>[31m
+              [36m<td>[31m
+                [36m<div[31m
+                  [33mstyle[31m=[32m"display: flex; gap: 8px;"[31m
+                [36m>[31m
+                  [36m<button[31m
+                    [33mclass[31m=[32m"btn btn-secondary"[31m
+                    [33mstyle[31m=[32m"padding: 4px 10px; font-size: 13px;"[31m
+                  [36m>[31m
+                    [0mEdit[0m
+                  [36m</button>[31m
+                  [36m<button[31m
+                    [33mclass[31m=[32m"btn btn-danger"[31m
+                    [33mstyle[31m=[32m"padding: 4px 10px; font-size: 13px;"[31m
+                  [36m>[31m
+                    [0mDelete[0m
+                  [36m</button>[31m
+                [36m</div>[31m
+              [36m</td>[31m
+            [36m</tr>[31m
+          [36m</tbody>[31m
+        [36m</table>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+[31m   [31m├ù[31m AdminProductsPage[2m > [22mloads product into form for editing and confirms update[90m 109[2mms[22m[31m[39m
+[31m     ΓåÆ Found a label with the text of: Name, however no form control was found associated to that label. Make sure you're using the "for" attribute or "aria-labelledby" attribute correctly.
+
+Ignored nodes: comments, script, style
+[36m<body>[31m
+  [36m<div>[31m
+    [36m<div>[31m
+      [36m<h1[31m
+        [33mstyle[31m=[32m"margin-bottom: 20px;"[31m
+      [36m>[31m
+        [0mManage Products[0m
+      [36m</h1>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"card"[31m
+        [33mstyle[31m=[32m"padding: 24px; margin-bottom: 32px;"[31m
+      [36m>[31m
+        [36m<h3[31m
+          [33mstyle[31m=[32m"margin-top: 0px; margin-bottom: 16px;"[31m
+        [36m>[31m
+          [0mEdit Product[0m
+        [36m</h3>[31m
+        [36m<form[31m
+          [33mstyle[31m=[32m"display: flex; flex-direction: column; gap: 16px;"[31m
+        [36m>[31m
+          [36m<div[31m
+            [33mstyle[31m=[32m"display: grid; grid-template-columns: 1fr 1fr; gap: 16px;"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"form-group"[31m
+            [36m>[31m
+              [36m<label>[31m
+                [0mName[0m
+              [36m</label>[31m
+              [36m<input[31m
+                [33mrequired[31m=[32m""[31m
+                [33mtype[31m=[32m"text"[31m
+                [33mvalue[31m=[32m"Laptop"[31m
+              [36m/>[31m
+            [36m</div>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"form-group"[31m
+            [36m>[31m
+              [36m<label>[31m
+                [0mPrice[0m
+              [36m</label>[31m
+              [36m<input[31m
+                [33mrequired[31m=[32m""[31m
+                [33mstep[31m=[32m"0.01"[31m
+                [33mtype[31m=[32m"number"[31m
+                [33mvalue[31m=[32m"999.99"[31m
+              [36m/>[31m
+            [36m</div>[31m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"form-group"[31m
+          [36m>[31m
+            [36m<label>[31m
+              [0mDescription[0m
+            [36m</label>[31m
+            [36m<textarea[31m
+              [33mrows[31m=[32m"3"[31m
+            [36m>[31m
+              [0mA fast laptop[0m
+            [36m</textarea>[31m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mstyle[31m=[32m"display: grid; grid-template-columns: 1fr 1fr; gap: 16px;"[31m
+          [36m>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"form-group"[31m
+            [36m>[31m
+              [36m<label>[31m
+                [0mCategory[0m
+              [36m</label>[31m
+              [36m<select>[31m
+                [36m<option[31m
+                  [33mvalue[31m=[32m""[31m
+                [36m>[31m
+                  [0mNo Category[0m
+                [36m</option>[31m
+                [36m<option[31m
+                  [33mvalue[31m=[32m"c1"[31m
+                [36m>[31m
+                  [0mElectronics[0m
+                [36m</option>[31m
+              [36m</select>[31m
+            [36m</div>[31m
+            [36m<div[31m
+              [33mclass[31m=[32m"form-group"[31m
+            [36m>[31m
+              [36m<label>[31m
+                [0mStock Status[0m
+              [36m</label>[31m
+              [36m<select>[31m
+                [36m<option[31m
+                  [33mvalue[31m=[32m"in_stock"[31m
+                [36m>[31m
+                  [0mIn Stock[0m
+                [36m</option>[31m
+                [36m<option[31m
+                  [33mvalue[31m=[32m"out_of_stock"[31m
+                [36m>[31m
+                  [0mOut of Stock[0m
+                [36m</option>[31m
+              [36m</select>[31m
+            [36m</div>[31m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mclass[31m=[32m"form-group"[31m
+          [36m>[31m
+            [36m<label>[31m
+              [0mImage URLs (comma separated)[0m
+            [36m</label>[31m
+            [36m<input[31m
+              [33mtype[31m=[32m"text"[31m
+              [33mvalue[31m=[32m"http://example.com/lap.jpg"[31m
+            [36m/>[31m
+          [36m</div>[31m
+          [36m<div[31m
+            [33mstyle[31m=[32m"display: flex; gap: 12px; margin-top: 8px;"[31m
+          [36m>[31m
+            [36m<button[31m
+              [33mclass[31m=[32m"btn btn-primary"[31m
+              [33mtype[31m=[32m"submit"[31m
+            [36m>[31m
+              [0mSave Changes[0m
+            [36m</button>[31m
+            [36m<button[31m
+              [33mclass[31m=[32m"btn btn-secondary"[31m
+              [33mtype[31m=[32m"button"[31m
+            [36m>[31m
+              [0mCancel Edit[0m
+            [36m</button>[31m
+          [36m</div>[31m
+        [36m</form>[31m
+      [36m</div>[31m
+      [36m<div[31m
+        [33mclass[31m=[32m"card"[31m
+        [33mstyle[31m=[32m"overflow-x: auto;"[31m
+      [36m>[31m
+        [36m<table[31m
+          [33mclass[31m=[32m"data-table"[31m
+        [36m>[31m
+          [36m<thead>[31m
+            [36m<tr>[31m
+              [36m<th>[31m
+                [0mImage[0m
+              [36m</th>[31m
+              [36m<th>[31m
+                [0mName[0m
+              [36m</th>[31m
+              [36m<th>[31m
+                [0mPrice[0m
+              [36m</th>[31m
+              [36m<th>[31m
+                [0mCategory[0m
+              [36m</th>[31m
+              [36m<th>[31m
+                [0mStatus[0m
+              [36m</th>[31m
+              [36m<th[31m
+                [33mstyle[31m=[32m"width: 140px;"[31m
+              [36m>[31m
+                [0mActions[0m
+              [36m</th>[31m
+            [36m</tr>[31m
+          [36m</thead>[31m
+          [36m<tbody>[31m
+            [36m<tr>[31m
+              [36m<td>[31m
+                [36m<img[31m
+                  [33malt[31m=[32m""[31m
+                  [33msrc[31m=[32m"http://example.com/lap.jpg"[31m
+                  [33mstyle[31m=[32m"width: 40px; height: 40px; object-fit: cover; border-radius: 4px;"[31m
+                [36m/>[31m
+              [36m</td>[31m
+              [36m<td[31m
+                [33mstyle[31m=[32m"font-weight: 500;"[31m
+              [36m>[31m
+                [0mLaptop[0m
+              [36m</td>[31m
+              [36m<td>[31m
+                [0m$[0m
+                [0m999.99[0m
+              [36m</td>[31m
+              [36m<td>[31m
+                [0mElectronics[0m
+              [36m</td>[31m
+              [36m<td>[31m
+                [36m<span[31m
+                  [33mstyle[31m=[32m"padding: 4px 8px; border-radius: 12px; font-size: 12px; background: rgb(220, 252, 231); color: rgb(22, 101, 52);"[31m
+                [36m>[31m
+                  [0mIn Stock[0m
+                [36m</span>[31m
+              [36m</td>[31m
+              [36m<td>[31m
+                [36m<div[31m
+                  [33mstyle[31m=[32m"display: flex; gap: 8px;"[31m
+                [36m>[31m
+                  [36m<button[31m
+                    [33mclass[31m=[32m"btn btn-secondary"[31m
+                    [33mstyle[31m=[32m"padding: 4px 10px; font-size: 13px;"[31m
+                  [36m>[31m
+                    [0mEdit[0m
+                  [36m</button>[31m
+                  [36m<button[31m
+                    [33mclass[31m=[32m"btn btn-danger"[31m
+                    [33mstyle[31m=[32m"padding: 4px 10px; font-size: 13px;"[31m
+                  [36m>[31m
+                    [0mDelete[0m
+                  [36m</button>[31m
+                [36m</div>[31m
+              [36m</td>[31m
+            [36m</tr>[31m
+          [36m</tbody>[31m
+        [36m</table>[31m
+      [36m</div>[31m
+    [36m</div>[31m
+  [36m</div>[31m
+[36m</body>[31m[39m
+
+[2m Test Files [22m [1m[31m1 failed[39m[22m[90m (1)[39m
+[2m      Tests [22m [1m[31m2 failed[39m[22m[2m | [22m[1m[32m2 passed[39m[22m[90m (4)[39m
+[2m   Start at [22m 18:25:18
+[2m   Duration [22m 1.37s[2m (transform 78ms, setup 70ms, collect 231ms, tests 298ms, environment 433ms, prepare 111ms)[22m
+
