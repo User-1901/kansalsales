@@ -7,7 +7,7 @@ import api from '../api/axios';
 vi.mock('../api/axios');
 
 // Skipping tests - AdminProductsPage not yet created
-vi.describe.skip('AdminProductsPage', () => {});
+vi.describe.skip('AdminProductsPage', () => {
   const mockProducts = [{
     id: 'p1',
     name: 'Laptop',
